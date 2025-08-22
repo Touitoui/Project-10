@@ -46,9 +46,18 @@ class AdminUserViewset(ModelViewSet):
     def patch(self, request, *args, **kwargs):
         if not request.data.get("id"):
             return Response({"error": "ID is required"}, status=400)
-        user = User.objects.filter(id=request.data.get("id"))
-        print(f"Updating user: {user}")
-        serializer = self.get_serializer(user.first(), data=request.data, partial=True)
+        user_instance = User.objects.filter(id=request.data.get("id")).first()
+        if not user_instance:
+            return Response({"error": "User not found"}, status=404)
+        
+        # Hash password if provided
+        data = request.data.copy()
+        if 'password' in data:
+            user_instance.set_password(data['password'])
+            user_instance.save()
+            data.pop('password')  # Remove password from serializer data
+        
+        serializer = self.get_serializer(user_instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
@@ -87,13 +96,20 @@ class UserViewset(ModelViewSet):
         return User.objects.filter(id=self.request.user.id)
 
     def patch(self, request, *args, **kwargs):
-        user = self.get_queryset()
+        user_instance = self.get_queryset().first()
 
-        serializer = self.get_serializer(user.first(), data=request.data, partial=True)
+        # Hash password if provided
+        data = request.data.copy()
+        if 'password' in data:
+            user_instance.set_password(data['password'])
+            user_instance.save()
+            data.pop('password')  # Remove password from serializer data
+
+        serializer = self.get_serializer(user_instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
-
+    
     def delete(self, request, *args, **kwargs):
         user = self.get_queryset()
         user.delete()
