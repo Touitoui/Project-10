@@ -8,6 +8,27 @@ from users.models import Contributor
 from project.serializers import ProjectSerializer, IssueSerializer, CommentSerializer
 from users.permissions import IsAdminAuthenticated
 
+class AdminProjectViewset(ModelViewSet):
+    serializer_class = ProjectSerializer
+    permission_classes = [IsAdminAuthenticated]
+
+    def get_queryset(self):
+        queryset = Project.objects.all()
+
+        user_id = self.request.GET.get('id')
+        if user_id is not None:
+            queryset = queryset.filter(id=user_id)
+
+        type_ = self.request.GET.get('type')
+        if type_ is not None:
+            queryset = queryset.filter(type=type_)
+
+        author = self.request.GET.get('author')
+        if author is not None:
+            queryset = queryset.filter(author=author)
+
+        return queryset
+
 class ProjectViewset(ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
