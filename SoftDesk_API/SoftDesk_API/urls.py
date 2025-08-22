@@ -25,6 +25,10 @@ from project.views import ProjectViewset, IssueViewset, CommentViewset
 
 router = routers.SimpleRouter()
 router.register('users', UserViewset, basename='users')
+router.register('contributors', ContributorViewset, basename='contributors')
+router.register('projects', ProjectViewset, basename='projects')
+router.register('issues', IssueViewset, basename='issues')
+router.register('comments', CommentViewset, basename='comments')
 
 router.register('admin/user', AdminUserViewset, basename='admin-user')
 

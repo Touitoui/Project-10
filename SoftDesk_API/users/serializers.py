@@ -25,3 +25,9 @@ class UserSerializer(ModelSerializer):
         if User.objects.filter(email=value).exists():
             raise ValidationError("Email must be unique.")
         return value
+
+class ContributorSerializer(ModelSerializer):
+ 
+    class Meta:
+        model = Contributor
+        fields = ['id', 'user', 'project', 'date_joined']

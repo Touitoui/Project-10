@@ -98,3 +98,11 @@ class UserViewset(ModelViewSet):
         user = self.get_queryset()
         user.delete()
         return Response(status=204)
+
+
+class ContributorViewset(ModelViewSet):
+    serializer_class = ContributorSerializer
+
+    def get_queryset(self):
+        return Contributor.objects.all()
+    

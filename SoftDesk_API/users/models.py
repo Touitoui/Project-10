@@ -28,3 +28,15 @@ class User(AbstractUser):
     )
 
     REQUIRED_FIELDS = ['first_name', 'last_name', 'date_of_birth', 'password']
+
+
+class Contributor(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contributions')
+    project = models.ForeignKey('project.Project', on_delete=models.CASCADE, related_name='contributors')
+    date_joined = models.DateTimeField(auto_now_add=True)
+    # TODO: rename to date_created
+    class Meta:
+        unique_together = ('user', 'project')
+        
+    def __str__(self):
+        return f"{self.user.username} - {self.project.name}"
