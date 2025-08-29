@@ -1,10 +1,10 @@
-from rest_framework.serializers import ModelSerializer, ValidationError
+from rest_framework.serializers import ModelSerializer, ValidationError, StringRelatedField
 from datetime import date
 
 from users.models import User, Contributor
+from project.serializers import ProjectSerializer
  
 class UserSerializer(ModelSerializer):
- 
     class Meta:
         model = User
         fields = ['id', 'date_of_birth', 'username', 'email', 'password', 'can_be_contacted', 'can_data_be_shared']
@@ -27,7 +27,9 @@ class UserSerializer(ModelSerializer):
         return value
 
 class ContributorSerializer(ModelSerializer):
- 
+    user = StringRelatedField()
+    project = ProjectSerializer()
+
     class Meta:
         model = Contributor
         fields = ['id', 'user', 'project', 'date_joined']

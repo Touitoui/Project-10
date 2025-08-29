@@ -55,7 +55,7 @@ class AdminUserViewset(ModelViewSet):
         if 'password' in data:
             user_instance.set_password(data['password'])
             user_instance.save()
-            data.pop('password')  # Remove password from serializer data
+            data.pop('password')
         
         serializer = self.get_serializer(user_instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -72,8 +72,8 @@ class AdminUserViewset(ModelViewSet):
 class RegisterUserViewset(ModelViewSet):
     serializer_class = UserSerializer
 
-    def get_queryset(self):
-        return User.objects.filter(id=self.request.user.id)
+    # def get_queryset(self):
+    #     return User.objects.filter(id=self.request.user.id)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -83,7 +83,9 @@ class RegisterUserViewset(ModelViewSet):
             username=serializer.validated_data['username'],
             email=serializer.validated_data.get('email', ''),
             password=serializer.validated_data['password'],
-            date_of_birth=serializer.validated_data.get('date_of_birth')
+            date_of_birth=serializer.validated_data.get('date_of_birth'),
+            can_data_be_shared=serializer.validated_data.get('can_data_be_shared', False),
+            can_be_contacted=serializer.validated_data.get('can_be_contacted', False),
         )
         return Response(UserSerializer(user).data, status=201)
     
@@ -103,7 +105,7 @@ class UserViewset(ModelViewSet):
         if 'password' in data:
             user_instance.set_password(data['password'])
             user_instance.save()
-            data.pop('password')  # Remove password from serializer data
+            data.pop('password')
 
         serializer = self.get_serializer(user_instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -118,6 +120,7 @@ class UserViewset(ModelViewSet):
 
 class ContributorViewset(ModelViewSet):
     serializer_class = ContributorSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Contributor.objects.all()
