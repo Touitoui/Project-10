@@ -27,7 +27,7 @@ class User(AbstractUser):
         related_query_name='user',
     )
 
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'date_of_birth', 'password']
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'date_of_birth', 'password']
 
 
 class Contributor(models.Model):
