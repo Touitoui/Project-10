@@ -30,71 +30,33 @@ class AdminUserViewset(ModelViewSet):
             queryset = queryset.filter(can_data_be_shared=can_data_be_shared)
 
         return queryset
-    
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        # Create user with hashed password
-        user = User.objects.create_user(
-            username=serializer.validated_data['username'],
-            email=serializer.validated_data.get('email', ''),
-            password=serializer.validated_data['password'],
-            date_of_birth=serializer.validated_data.get('date_of_birth')
-        )
-        return Response(UserSerializer(user).data, status=201)
-    
-    def patch(self, request, *args, **kwargs):
-        if not request.data.get("id"):
-            return Response({"error": "ID is required"}, status=400)
-        user_instance = User.objects.filter(id=request.data.get("id")).first()
-        if not user_instance:
-            return Response({"error": "User not found"}, status=404)
-        
-        # Hash password if provided
-        data = request.data.copy()
-        if 'password' in data:
-            user_instance.set_password(data['password'])
-            user_instance.save()
-            data.pop('password')
-        
-        serializer = self.get_serializer(user_instance, data=data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
 
-    def delete(self, request, *args, **kwargs):
-        if not request.data.get("id"):
-            return Response({"error": "ID is required"}, status=400)
-        user = User.objects.filter(id=request.data.get("id"))
-        user.delete()
-        return Response(status=204)
 
 class RegisterUserViewset(ModelViewSet):
     serializer_class = UserSerializer
 
-    # def get_queryset(self):
-    #     return User.objects.filter(id=self.request.user.id)
-
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         # Create user with hashed password
         user = User.objects.create_user(
             username=serializer.validated_data['username'],
-            email=serializer.validated_data.get('email', ''),
+            email=serializer.validated_data['email'],
             password=serializer.validated_data['password'],
             date_of_birth=serializer.validated_data.get('date_of_birth'),
             can_data_be_shared=serializer.validated_data.get('can_data_be_shared', False),
             can_be_contacted=serializer.validated_data.get('can_be_contacted', False),
         )
         return Response(UserSerializer(user).data, status=201)
-    
+
 
 class UserViewset(ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        ''' Return the user instance for the current authenticated user '''
         return User.objects.filter(id=self.request.user.id)
 
     def patch(self, request, *args, **kwargs):
@@ -111,11 +73,14 @@ class UserViewset(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
-    
-    def delete(self, request, *args, **kwargs):
-        user = self.get_queryset()
-        user.delete()
-        return Response(status=204)
+
+
+class AdminContributorViewset(ModelViewSet):
+    serializer_class = ContributorSerializer
+    permission_classes = [IsAdminAuthenticated]
+
+    def get_queryset(self):
+        return Contributor.objects.all()
 
 
 class ContributorViewset(ModelViewSet):
@@ -123,5 +88,10 @@ class ContributorViewset(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Contributor.objects.all()
+        ''' Return the contributors where user is the current user '''
+        return Contributor.objects.filter(user=self.request.user.id)
     
+    def perform_create(self, serializer):
+        ''' Automatically set the user to the current user when creating a contributor '''
+        serializer.save(user=self.request.user)
+

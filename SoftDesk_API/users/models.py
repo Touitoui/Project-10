@@ -9,23 +9,7 @@ class User(AbstractUser):
     date_of_birth = models.DateField(null=False, blank=False)
     can_be_contacted = models.BooleanField(default=True)
     can_data_be_shared = models.BooleanField(default=True)
-    
-    groups = models.ManyToManyField(
-        'auth.Group',
-        verbose_name='groups',
-        blank=True,
-        help_text='The groups this user belongs to.',
-        related_name='custom_user_set',
-        related_query_name='user',
-    )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        verbose_name='user permissions',
-        blank=True,
-        help_text='Specific permissions for this user.',
-        related_name='custom_user_permission_set',
-        related_query_name='user',
-    )
+    created_time = models.DateTimeField(auto_now_add=True)
 
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'date_of_birth', 'password']
 
@@ -33,8 +17,7 @@ class User(AbstractUser):
 class Contributor(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contributions')
     project = models.ForeignKey('project.Project', on_delete=models.CASCADE, related_name='contributors')
-    date_joined = models.DateTimeField(auto_now_add=True)
-    # TODO: rename to date_created
+    created_time = models.DateTimeField(auto_now_add=True)
     class Meta:
         unique_together = ('user', 'project')
         
