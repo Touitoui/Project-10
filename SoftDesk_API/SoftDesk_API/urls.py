@@ -20,8 +20,8 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from users.views import AdminUserViewset, UserViewset, RegisterUserViewset, ContributorViewset
-from project.views import ProjectViewset, IssueViewset, CommentViewset
+from users.views import AdminUserViewset, UserViewset, RegisterUserViewset, AdminContributorViewset, ContributorViewset
+from project.views import ProjectViewset, IssueViewset, CommentViewset, AdminProjectViewset, AdminIssueViewset, AdminCommentViewset
 
 router = routers.SimpleRouter()
 router.register('users', UserViewset, basename='users')
@@ -30,7 +30,11 @@ router.register('projects', ProjectViewset, basename='projects')
 router.register('issues', IssueViewset, basename='issues')
 router.register('comments', CommentViewset, basename='comments')
 
-router.register('admin/user', AdminUserViewset, basename='admin-user')
+router.register('admin/users', AdminUserViewset, basename='admin-user')
+router.register('admin/contributors', AdminContributorViewset, basename='admin-contributor')
+router.register('admin/projects', AdminProjectViewset, basename='admin-project')
+router.register('admin/issues', AdminIssueViewset, basename='admin-issue')
+router.register('admin/comments', AdminCommentViewset, basename='admin-comment')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
