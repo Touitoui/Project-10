@@ -4,7 +4,7 @@ from project.models import Project, Issue, Comment
 class ProjectSerializer(ModelSerializer):
     class Meta:
         model = Project
-        fields = ['id', 'name', 'description', 'type', 'created_time', 'author']
+        fields = ['id', 'name', 'description', 'type', 'author', 'created_time']
         extra_kwargs = {'author': {'read_only': True}}
 
     def validate_name(self, value):
@@ -25,9 +25,10 @@ class IssueSerializer(ModelSerializer):
 
 class CommentSerializer(ModelSerializer):
     issue_info = IssueSerializer(read_only=True, source='issue')
+    # # user = StringRelatedField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'description', 'issue', 'issue_info', 'created_time']
+        fields = ['id', 'description', 'issue', 'issue_info', 'author', 'created_time']
         extra_kwargs = {'author': {'read_only': True}}
 
