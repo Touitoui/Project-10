@@ -59,21 +59,6 @@ class UserViewset(ModelViewSet):
         ''' Return the user instance for the current authenticated user '''
         return User.objects.filter(id=self.request.user.id)
 
-    def patch(self, request, *args, **kwargs):
-        user_instance = self.get_queryset().first()
-
-        # Hash password if provided
-        data = request.data.copy()
-        if 'password' in data:
-            user_instance.set_password(data['password'])
-            user_instance.save()
-            data.pop('password')
-
-        serializer = self.get_serializer(user_instance, data=data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
-
 
 class AdminContributorViewset(ModelViewSet):
     serializer_class = ContributorSerializer
