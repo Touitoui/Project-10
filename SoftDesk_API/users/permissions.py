@@ -19,7 +19,7 @@ class IsAuthor(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        # Instance must have an attribute named `author`.
+        # Write permissions are only allowed to the author of the object.
         return obj.author == request.user
 
 
@@ -32,15 +32,16 @@ class IsContributor(BasePermission):
         
         if not request.data.get('project'):
             return True
+        
         return Contributor.objects.filter(user=request.user, project=request.data.get('project')).exists()
         
     def has_object_permission(self, request, view, obj):
         ''' Check if the user is a contributor to the project of the object '''
 
         project = None
-        if hasattr(obj, 'project'):
+        if hasattr(obj, 'project'): # Issue
             project = obj.project
-        elif hasattr(obj, 'issue'):
+        elif hasattr(obj, 'issue'): # Comment
             project = obj.issue.project
 
         if request.method in SAFE_METHODS:

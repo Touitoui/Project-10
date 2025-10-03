@@ -1,9 +1,9 @@
-from rest_framework.serializers import ModelSerializer, ValidationError, StringRelatedField
+from rest_framework.serializers import ModelSerializer, ValidationError
 from datetime import date
 
 from users.models import User, Contributor
-from project.serializers import ProjectSerializer
  
+
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
@@ -23,11 +23,8 @@ class UserSerializer(ModelSerializer):
 
 
 class ContributorSerializer(ModelSerializer):
-    # user = StringRelatedField()    
-    project_info = ProjectSerializer(read_only=True, source='project')
-
     class Meta:
         model = Contributor
-        fields = ['id', 'user', 'project', 'project_info', 'created_time']
+        fields = ['id', 'user', 'project', 'created_time']
         extra_kwargs = {'user': {'read_only': True}}
 

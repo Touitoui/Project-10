@@ -1,9 +1,7 @@
-from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-
-from datetime import date
+from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import User, Contributor
 from users.serializers import UserSerializer, ContributorSerializer
@@ -13,23 +11,11 @@ from users.permissions import IsAdminAuthenticated
 class AdminUserViewset(ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAdminAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['id', 'username', 'email', 'can_be_contacted', 'can_data_be_shared']
 
     def get_queryset(self):
-        queryset = User.objects.all()
-
-        user_id = self.request.GET.get('id')
-        if user_id is not None:
-            queryset = queryset.filter(id=user_id)
-
-        can_be_contacted = self.request.GET.get('can_be_contacted')
-        if can_be_contacted is not None:
-            queryset = queryset.filter(can_be_contacted=can_be_contacted)
-
-        can_data_be_shared = self.request.GET.get('can_data_be_shared')
-        if can_data_be_shared is not None:
-            queryset = queryset.filter(can_data_be_shared=can_data_be_shared)
-
-        return queryset
+        return User.objects.all()
 
 
 class RegisterUserViewset(ModelViewSet):
@@ -63,6 +49,8 @@ class UserViewset(ModelViewSet):
 class AdminContributorViewset(ModelViewSet):
     serializer_class = ContributorSerializer
     permission_classes = [IsAdminAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['id', 'user', 'project', 'created_time']
 
     def get_queryset(self):
         return Contributor.objects.all()
@@ -71,6 +59,8 @@ class AdminContributorViewset(ModelViewSet):
 class ContributorViewset(ModelViewSet):
     serializer_class = ContributorSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['id', 'user', 'project', 'created_time']
 
     def get_queryset(self):
         ''' Return the contributors where user is the current user '''
