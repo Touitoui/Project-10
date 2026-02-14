@@ -30,14 +30,7 @@ router.register('projects', ProjectViewset, basename='projects')
 router.register('issues', IssueViewset, basename='issues')
 router.register('comments', CommentViewset, basename='comments')
 
-router.register('admin/users', AdminUserViewset, basename='admin-user')
-router.register('admin/contributors', AdminContributorViewset, basename='admin-contributor')
-router.register('admin/projects', AdminProjectViewset, basename='admin-project')
-router.register('admin/issues', AdminIssueViewset, basename='admin-issue')
-router.register('admin/comments', AdminCommentViewset, basename='admin-comment')
-
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include(router.urls)),
     path('api/register/', RegisterUserViewset.as_view({'post': 'create'}), name='register'),
