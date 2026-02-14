@@ -55,3 +55,27 @@ Authorization: Bearer your_access_token
 ```
 
 See Postman file for subsequent requests: `Project 10.postman_collection.json`
+Or Swagger UI as described below :
+
+### Access Interactive Documentation
+
+Once the server is running, you can access the API documentation at:
+
+- **Swagger UI** (interactive testing): http://localhost:8000/api/docs/
+- **ReDoc** (clean documentation): http://localhost:8000/api/redoc/
+- **OpenAPI Schema** (JSON/YAML): http://localhost:8000/api/schema/
+
+### Using Swagger UI
+
+1. Navigate to http://localhost:8000/api/docs/
+2. Click the **"Authorize"** button at the top
+3. Enter your JWT token in the format: `Bearer your_access_token`
+4. Now you can test all endpoints directly from the browser
+
+### Generate/Update OpenAPI Schema File
+
+To regenerate the `schema.yml` file after making changes to the API:
+
+```bash
+pipenv run python manage.py spectacular --color --file schema.yml
+```
